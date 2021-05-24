@@ -1,0 +1,52 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: current",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            // "python": "python3",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}/SPOTIFYYYDL-PY/"
+            },
+        },
+        {
+            "name": "Python: common line",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceRoot}/SPOTIFYYYDL-PY/spotifyyy_dl/__init__.py",
+            "console": "integratedTerminal",
+            // "python": "python3",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}/SPOTIFYYYDL-PY/"
+            },
+            "args": [
+                "--link",
+                "https://tidal.com/browse/track/153955724",
+                "-o",
+                "./download/",
+                "-q",
+                "0"
+            ]
+        },
+        {
+            "name": "Python: main",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceRoot}/SPOTIFYYYDL-PY/spotifyyy_dl/__init__.py",
+            "console": "integratedTerminal",
+            // "python": "python3",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}/SPOTIFYYYDL-PY/"
+            },
+            "justMyCode": false
+
+        }
+    ]
+}
