@@ -12,7 +12,7 @@ import os
 import json
 import base64
 import aigpy
-from spotifyyy_dl.enum import AudioQuality
+from aigpy.modelHelper import ModelBase
 
 def __encode__(string):
     sw = bytes(string, 'utf-8')
@@ -38,44 +38,15 @@ def getSettingsPath():
 def getLogPath():
     return getSettingsPath() + '/.spotifyyy-dl.log'
 
-class TokenSettings(object):
-    userid = None
-    countryCode = None
-    username = None
-    password = None
-    user_auth_token = None
 
-    @staticmethod
-    def read():
-        path = TokenSettings.__getFilePath__()
-        txt = aigpy.file.getContent(path, True)
-        if txt == "":
-            return TokenSettings()
-        txt = __decode__(txt)
-        data = json.loads(txt)
-        ret = aigpy.model.dictToModel(data, TokenSettings())
-        return ret
-
-    @staticmethod
-    def save(model):
-        data = aigpy.model.modelToDict(model)
-        txt = json.dumps(data)
-        txt = __encode__(txt)
-        path = TokenSettings.__getFilePath__()
-        aigpy.file.write(path, txt, 'wb')
-    
-    @staticmethod
-    def __getFilePath__():
-        return getSettingsPath() + '/.spotifyyy-dl.token.json'
-
-class Settings(object):
+class Settings(ModelBase):
+    ytbProxy = ""
     downloadPath = "./download/"
     onlyM4a = False
     addExplicitTag = True
     addHyphen = True
     addYear = False
     useTrackNumber = True
-    audioQuality = AudioQuality.Normal
     checkExist = True
     artistBeforeTitle = False
     includeEP = True
@@ -104,7 +75,6 @@ class Settings(object):
             return Settings()
         data = json.loads(txt)
         ret = aigpy.model.dictToModel(data, Settings())
-        ret.audioQuality = Settings.getAudioQuality(ret.audioQuality)
         ret.usePlaylistFolder = ret.usePlaylistFolder == True or ret.usePlaylistFolder is None
         ret.multiThreadDownload = ret.multiThreadDownload == True or ret.multiThreadDownload is None
         if ret.albumFolderFormat is None:
@@ -116,18 +86,10 @@ class Settings(object):
     @staticmethod
     def save(model):
         data = aigpy.model.modelToDict(model)
-        data['audioQuality'] = model.audioQuality.name
         txt = json.dumps(data)
         path = Settings.__getFilePath__()
         aigpy.file.write(path, txt, 'w+')
 
-    @staticmethod
-    def getAudioQuality(value):
-        for item in AudioQuality:
-            if item.name == value:
-                return item
-        return AudioQuality.Normal
-    
     @staticmethod
     def __getFilePath__():
         return getSettingsPath() + '/.spotifyyy-dl.json'

@@ -16,18 +16,16 @@ from spotifyyy_dl.settings import Settings, getSettingsPath
 from spotifyyy_dl.model import Album, Track, Playlist, Artist, StreamUrl
 
 __LOGO__ = '''
-  /$$$$$$            /$$                                              
- /$$__  $$          | $$                                              
-| $$  \ $$  /$$$$$$ | $$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$$$
-| $$  | $$ /$$__  $$| $$__  $$| $$  | $$|____ /$$/|____ /$$/|____ /$$/
-| $$  | $$| $$  \ $$| $$  \ $$| $$  | $$   /$$$$/    /$$$$/    /$$$$/ 
-| $$/$$ $$| $$  | $$| $$  | $$| $$  | $$  /$$__/    /$$__/    /$$__/  
-|  $$$$$$/|  $$$$$$/| $$$$$$$/|  $$$$$$/ /$$$$$$$$ /$$$$$$$$ /$$$$$$$$
- \____ $$$ \______/ |_______/  \______/ |________/|________/|________/
-      \__/                                                            
-       https://github.com/yaronzz/Qobuzzz-Media-Downloader 
+   _____             __  _ ____                 
+  / ___/____  ____  / /_(_) __/_  ____  ____  __
+  \__ \/ __ \/ __ \/ __/ / /_/ / / / / / / / / /
+ ___/ / /_/ / /_/ / /_/ / __/ /_/ / /_/ / /_/ / 
+/____/ .___/\____/\__/_/_/  \__, /\__, /\__, /  
+    /_/                    /____//____//____/ 
+      
+https://github.com/yaronzz/Spotify-Media-Downloader
 '''
-VERSION = '2021.3.25.0'
+VERSION = '2021.5.25.0'
 
 class Printf(object):
 
@@ -80,6 +78,7 @@ class Printf(object):
         # tb.add_row([LANG.SETTING_MULITHREAD_DOWNLOAD, data.multiThreadDownload])
         tb.add_row([LANG.SETTING_ALBUM_FOLDER_FORMAT, data.albumFolderFormat])
         tb.add_row([LANG.SETTING_TRACK_FILE_FORMAT, data.trackFileFormat])
+        tb.add_row(['Yotube Proxy', data.ytbProxy])
         print(tb)
 
     @staticmethod
@@ -168,7 +167,7 @@ class Printf(object):
         # tb.add_row([LANG.MODEL_EXPLICIT, data.explicit])
         print(tb)
         logging.info("====album " + str(data.id) + "====\n" +
-                     "title:" + data.title + "\n" + 
+                     "title:" + data.name + "\n" + 
                      "track num:" + str(data.total_tracks) + "\n" +
                     #  "video num:" + str(data.numberOfVideos) + "\n" +
                      "==================================")

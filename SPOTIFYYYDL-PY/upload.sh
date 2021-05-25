@@ -10,12 +10,12 @@ python setup.py sdist bdist_wheel
 # creat exe file
 pyinstaller -F spotifyyy_dl/__init__.py
 # rename exe name
-mv dist/__init__.exe exe/spotifyyy_dl-dl.exe
+mv dist/__init__.exe exe/spotifyyy-dl.exe
 
-pip uninstall -y spotifyyy_dl-dl
+pip uninstall -y spotifyyy-dl
 
 # creat requirements.txt
-pipreqs ./ --force --encoding=utf8
+# pipreqs ./ --force --encoding=utf8
 
 # python setup.py install
 

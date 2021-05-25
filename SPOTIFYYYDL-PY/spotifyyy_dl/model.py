@@ -8,29 +8,32 @@
 @Contact :   yaronhuang@foxmail.com
 @Desc    :   
 '''
+from aigpy.modelHelper import ModelBase
 
 
-class StreamUrl(object):
+class StreamUrl(ModelBase):
     name = None
     type = None
     artistNames = None
     albumName = None
     length = 0
     link = None
+    data = None
+    
 
 
-class Image(object):
+class Image(ModelBase):
     height = 0
     width = 0
     url = None
 
 
-class Artist(object):
+class Artist(ModelBase):
     id = 0
     name = None
 
 
-class Album(object):
+class Album(ModelBase):
     id = None
     name = None
     total_tracks = 0
@@ -40,7 +43,7 @@ class Album(object):
     tracks = None
 
 
-class Track(object):
+class Track(ModelBase):
     id = 0
     name = None
     track_number = 0
@@ -52,7 +55,7 @@ class Track(object):
     trackNumberOnPlaylist = 0
 
 
-class Playlist(object):
+class Playlist(ModelBase):
     id = None
     name = None
     description = None

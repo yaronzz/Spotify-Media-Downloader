@@ -9,43 +9,26 @@
 @Desc    :  
 '''
 
-import hashlib
-import os
 import re
-import uuid
-import requests
-import json
 import base64
 import aigpy
-import time
-
 import spotipy
+
 from spotipy.oauth2 import SpotifyClientCredentials
 from ytmusicapi import YTMusic
 
-from requests.packages import urllib3
 from spotifyyy_dl.model import Album, Track, Artist, Playlist, StreamUrl
-from spotifyyy_dl.enum import Type, AudioQuality
-
-
-__APP_ID__ = "28a6d5ebce3a4024bc5b00abb6f9fdf8"
-__APP_SECRET__ = "392b2f4a105b47f9ada521e458641afc"
-
-
-# SSL Warnings
-urllib3.disable_warnings()
-# add retry number
-requests.adapters.DEFAULT_RETRIES = 5
+from spotifyyy_dl.enum import Type
 
 
 class MatchTrack(object):
     def __init__(self):
         super().__init__()
-        
+
     @staticmethod
     def calcWeight(spotObj: Track, ytObj: StreamUrl) -> int:
         value = 0
-        
+
         if spotObj.name == ytObj.name:
             value += 40
         else:
@@ -61,28 +44,28 @@ class MatchTrack(object):
                 ytName = re.sub(r"[%s]+" % punc, "", ytName)
                 if spotName in ytName:
                     value += 10
-        
+
         if value <= 0:
             return 0
-            
+
         if spotObj.album.name == ytObj.albumName:
             value += 20
-            
+
         if spotObj.artists[0].name in ytObj.artistNames:
             value += 20
         elif spotObj.artists[0].name.lower() == ytObj.artistNames.lower():
             value += 10
         elif spotObj.artists[0].name.lower() == ytObj.name.lower():
             value += 5
-        
+
         spotDur = spotObj.duration_ms / 1000
         if abs(spotDur - ytObj.length) < 1:
             value += 10
 
         return value
 
-    @staticmethod 
-    def getBestMatchItems(spotObj: Track, streamUrls: list) -> (int, list):
+    @staticmethod
+    def getBestMatchItems(spotObj: Track, streamUrls: list) -> (list):
         bestValue = 0
         array = []
         for item in streamUrls:
@@ -98,15 +81,18 @@ class MatchTrack(object):
                 array.clear()
                 array.append(item)
                 continue
-        return bestValue, array
+        return array
 
 
 class SpotifyAPI(object):
     def __init__(self):
-        self.ytm = YTMusic(proxies={"http": "http://127.0.0.1:10809", "https": "http://127.0.0.1:10809"})
-        self.auth = SpotifyClientCredentials(client_id=__APP_ID__, client_secret=__APP_SECRET__)
+        self.ytm = YTMusic()
+
+        sid = base64.b64decode("MjhhNmQ1ZWJjZTNhNDAyNGJjNWIwMGFiYjZmOWZkZjg=").decode()
+        sec = base64.b64decode("MzkyYjJmNGExMDViNDdmOWFkYTUyMWU0NTg2NDFhZmM=").decode()
+        self.auth = SpotifyClientCredentials(client_id=sid,
+                                             client_secret=sec)
         self.spotf = spotipy.Spotify(auth_manager=self.auth)
-        self.__debugVar = 0
 
     def __getItems__(self, type: str, id: str = '') -> list:
         offset = 0
@@ -168,9 +154,11 @@ class SpotifyAPI(object):
         except Exception as e:
             return "Get track failed." + str(e), None
 
-    def getStreamUrls(self, track:Track):
+    def getStreamUrls(self, track: Track, proxies: dict = {}):
         try:
             searchStr = f'{track.artists[0].name} - {track.name}'
+
+            self.ytm.proxies = proxies
             searchResult = self.ytm.search(searchStr)
 
             array = []
@@ -181,28 +169,18 @@ class SpotifyAPI(object):
                     if video_id is None:
                         return {}
                     obj = StreamUrl()
+                    obj.data = result
                     obj.name = result['title']
                     obj.type = result['resultType']
                     obj.artistNames = artists
                     obj.albumName = result['album']['name'] if 'album' in result else ''
-                    obj.length = self.timeStringToSecond(result['duration'])
+                    obj.length = aigpy.time.strToSecond(result['duration'])
                     obj.link = f'https://www.youtube.com/watch?v={video_id}'
                     array.append(obj)
-            
+
             return '', array
         except Exception as e:
             return "Get stream url failed." + str(e), None
-
-    @staticmethod 
-    def timeStringToSecond(timeStr) -> int:
-        array = timeStr.split(':')
-        if len(array) == 1:
-            return int(array[0])
-        elif len(array) == 2:
-            return int(array[0]) * 60 + int(array[1])
-        elif len(array) == 3:
-            return int(array[0]) * 3600 + int(array[1]) * 60 + int(array[2])
-        return 0
 
     @staticmethod
     def getArtistsName(artists=[]):
@@ -217,13 +195,13 @@ class SpotifyAPI(object):
         if "spotify.com" not in url:
             return etype, sid
 
-        if 'artist' in url:
+        if 'artist/' in url:
             etype = Type.Artist
-        if 'album' in url:
+        if 'album/' in url:
             etype = Type.Album
-        if 'track' in url:
+        if 'track/' in url:
             etype = Type.Track
-        if 'playlist' in url:
+        if 'playlist/' in url:
             etype = Type.Playlist
 
         if etype == Type.Null:

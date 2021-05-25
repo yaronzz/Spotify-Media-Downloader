@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['spotifyyy_dl\\__init__.py'],
-             pathex=['E:\\OneDrive\\code\\Qobuz-Media-Downloader\\QOBUZZZDL-PY'],
+             pathex=['E:\\OneDrive\\code\\Spotify-Media-Downloader\\SPOTIFYYYDL-PY'],
              binaries=[],
              datas=[],
              hiddenimports=[],

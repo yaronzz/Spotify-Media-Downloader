@@ -18,16 +18,13 @@ import getopt
 import time
 import aigpy
 
-from spotifyyy_dl.spotify import SpotifyAPI
-from spotifyyy_dl.settings import Settings, TokenSettings, getLogPath
+from spotifyyy_dl.settings import Settings, getLogPath
 from spotifyyy_dl.printf import Printf, VERSION
 from spotifyyy_dl.download import start
-from spotifyyy_dl.enum import AudioQuality
 from spotifyyy_dl.lang.language import getLang, setLang, initLang, getLangChoicePrint
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-API = SpotifyAPI()
 CONF = Settings.read()
 LANG = initLang(CONF.language)
 
@@ -43,8 +40,8 @@ def changeSettings():
         return
 
     CONF.downloadPath = Printf.enterPath(LANG.CHANGE_DOWNLOAD_PATH, LANG.MSG_PATH_ERR, '0', CONF.downloadPath)
-    CONF.audioQuality = AudioQuality(int(Printf.enterLimit(
-        LANG.CHANGE_AUDIO_QUALITY, LANG.MSG_INPUT_ERR, ['0', '1', '2', '3'])))
+    # CONF.audioQuality = AudioQuality(int(Printf.enterLimit(
+    #     LANG.CHANGE_AUDIO_QUALITY, LANG.MSG_INPUT_ERR, ['0', '1', '2', '3'])))
     # CONF.videoQuality = AudioQuality(int(Printf.enterLimit(
         # LANG.CHANGE_VIDEO_QUALITY, LANG.MSG_INPUT_ERR, ['0', '1', '2', '3'])))
     # CONF.onlyM4a = Printf.enter(LANG.CHANGE_ONLYM4A) == '1'
@@ -57,6 +54,9 @@ def changeSettings():
         LANG.CHANGE_ALBUM_FOLDER_FORMAT, CONF.albumFolderFormat, Settings.getDefaultAlbumFolderFormat())
     CONF.trackFileFormat = Printf.enterFormat(LANG.CHANGE_TRACK_FILE_FORMAT,
                                               CONF.trackFileFormat, Settings.getDefaultTrackFileFormat())
+    CONF.ytbProxy = Printf.enter("Yotube proxy(0-skip):")
+    if CONF.ytbProxy == '0':
+        CONF.ytbProxy = ''
 
     LANG = setLang(CONF.language)
     Settings.save(CONF)
@@ -67,7 +67,7 @@ def mainCommand():
         opts, args = getopt.getopt(sys.argv[1:], "hvl:o:q:r:", ["help", "version",
                                                                 "link=", "output="])
     except getopt.GetoptError as errmsg:
-        Printf.err(vars(errmsg)['msg'] + ". Use 'qobuzzz-dl -h' for useage.")
+        Printf.err(vars(errmsg)['msg'] + ". Use 'spotifyyy-dl -h' for useage.")
         return
 
     link = None
@@ -103,11 +103,11 @@ def main():
     Printf.logo()
     Printf.settings(CONF)
 
-    # onlineVer = aigpy.pip.getLastVersion('qobuzzz-dl')
-    # if not aigpy.string.isNull(onlineVer):
-    #     icmp = aigpy.system.cmpVersion(onlineVer, VERSION)
-    #     if icmp > 0:
-    #         Printf.info(LANG.PRINT_LATEST_VERSION + ' ' + onlineVer)
+    onlineVer = aigpy.pip.getLastVersion('spotifyyy-dl')
+    if not aigpy.string.isNull(onlineVer):
+        icmp = aigpy.system.cmpVersion(onlineVer, VERSION)
+        if icmp > 0:
+            Printf.info(LANG.PRINT_LATEST_VERSION + ' ' + onlineVer)
 
     while True:
         Printf.choices()
@@ -123,7 +123,7 @@ def main():
 if __name__ == "__main__":
     main()
     # test example
-    # track https://open.spotify.com/track/7gXiPiffMrqPe3Q1vzD6uM'
-    # album z2u0t8ukvm5pb https://play.qobuz.com/album/0603497899272
-    # artist 167422
-    # playlist 1452423
+    # track https://open.spotify.com/track/7gXiPiffMrqPe3Q1vzD6uM    3kwqNLXvsjSrIXbVsRBj8q
+    # album 6BjUjvxxjrEYDp7jN8XYau
+    # artist 06HL4z0CvFAxyc27GXpf02
+    # playlist 2iZIBO5yTorFZnPjNaS1WF
